@@ -1,4 +1,4 @@
 *.tfvars
 .vault_pass
-./terraform
+.terraform/
 .terraform.lock.hcl
