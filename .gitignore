@@ -2,5 +2,5 @@
 .vault_pass
 .terraform/
 .terraform.lock.hcl
-.terraform.tfstate
+terraform.tfstate
 .terraform.tfstate.lock.info
