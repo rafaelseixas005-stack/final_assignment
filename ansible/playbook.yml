@@ -1,11 +1,13 @@
 ---
 - name: Install and Configure Nginx
   hosts: webservers
-  become: yes
+  vars_files:
+    - vault.yml
+  become: true 
   tasks:
     - name: Update apt cache
       apt:
-        update_cache: yes
+        update_cache: true
         cache_valid_time: 3600
 
     - name: Install Nginx
@@ -17,7 +19,7 @@
       service:
         name: nginx
         state: started
-        enabled: yes
+        enabled: true
 
     - name: Create a custom index.html
       copy:

@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 3.0" # Use a version constraint appropriate for your project
+      version = "~> 3.0"
     }
   }
 }
@@ -55,7 +55,7 @@ resource "azurerm_network_interface" "nic" {
   }
 }
 
-# 5. Network Security Group (to allow SSH)
+# 5. Network Security Group (SSH + HTTP)
 resource "azurerm_network_security_group" "nsg" {
   name                = "my-vm-nsg"
   location            = azurerm_resource_group.rg.location
@@ -69,8 +69,8 @@ resource "azurerm_network_security_rule" "ssh_rule" {
   access                      = "Allow"
   protocol                    = "Tcp"
   source_port_range           = "*"
-  destination_port_range      = "22" # Standard SSH port
-  source_address_prefix       = "*"  # Allow from any IP (Be cautious! Restrict this in production)
+  destination_port_range      = "22"
+  source_address_prefix       = "*"
   destination_address_prefix  = "*"
   resource_group_name         = azurerm_network_security_group.nsg.resource_group_name
   network_security_group_name = azurerm_network_security_group.nsg.name
@@ -95,17 +95,24 @@ resource "azurerm_network_interface_security_group_association" "nic_nsg_associa
   network_security_group_id = azurerm_network_security_group.nsg.id
 }
 
-
-# 6. The Virtual Machine
+# 6. Virtual Machine (SSH KEY - SEM PASSWORD)
 resource "azurerm_linux_virtual_machine" "vm" {
-  name                            = "my-ubuntu-vm"
-  location                        = azurerm_resource_group.rg.location
-  resource_group_name             = azurerm_resource_group.rg.name
-  size                            = "Standard_B2S" # Basic VM size
-  network_interface_ids           = [azurerm_network_interface.nic.id]
-  disable_password_authentication = false
+  name                = "my-ubuntu-vm"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  size                = "Standard_B2S"
+
+  network_interface_ids = [
+    azurerm_network_interface.nic.id
+  ]
+
   admin_username                  = "azureuser"
-  admin_password                  = "P@sswOrd12345" # **Change this to a strong password and use a variable!**
+  disable_password_authentication = true
+
+  admin_ssh_key {
+    username   = "azureuser"
+    public_key = file("~/.ssh/id_rsa.pub")
+  }
 
   os_disk {
     caching              = "ReadWrite"
@@ -120,7 +127,25 @@ resource "azurerm_linux_virtual_machine" "vm" {
   }
 }
 
-# Output the public IP to connect to the VM later
+# 7. Terraform -> Ansible (INTEGRAÇÃO AUTOMÁTICA)
+resource "null_resource" "ansible" {
+
+  provisioner "local-exec" {
+    command = <<EOT
+      ansible-playbook \
+        -i "${azurerm_public_ip.publicip.ip_address}," \
+        ansible/playbook.yml \
+        -u azureuser \
+        --private-key ~/.ssh/id_rsa
+    EOT
+  }
+
+  depends_on = [
+    azurerm_linux_virtual_machine.vm
+  ]
+}
+
+# Output do IP público
 output "public_ip_address" {
   value = azurerm_public_ip.publicip.ip_address
 }
