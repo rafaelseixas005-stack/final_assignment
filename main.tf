@@ -9,6 +9,7 @@ terraform {
 
 provider "azurerm" {
   features {}
+  skip_provider_registration = true
 }
 
 # 1. Resource Group
@@ -19,7 +20,7 @@ resource "azurerm_resource_group" "rg" {
 
 # 2. Virtual Network and Subnet
 resource "azurerm_virtual_network" "vnet" {
-  name                = "my-vnet"
+  name                = "my-vnet-new"
   address_space       = ["10.0.0.0/16"]
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
@@ -30,6 +31,10 @@ resource "azurerm_subnet" "subnet" {
   resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = ["10.0.2.0/24"]
+  
+  depends_on = [
+    azurerm_virtual_network.vnet
+  ]
 }
 
 # 3. Public IP Address
@@ -53,7 +58,10 @@ resource "azurerm_network_interface" "nic" {
     private_ip_address_allocation = "Dynamic"
     public_ip_address_id          = azurerm_public_ip.publicip.id
   }
-}
+  ip_forwarding_enabled = true
+} 
+
+
 
 # 5. Network Security Group (SSH + HTTP)
 resource "azurerm_network_security_group" "nsg" {
@@ -132,6 +140,7 @@ resource "null_resource" "ansible" {
 
   provisioner "local-exec" {
     command = <<EOT
+      sleep 30
       ansible-playbook \
         -i "${azurerm_public_ip.publicip.ip_address}," \
         ansible/playbook.yml \
