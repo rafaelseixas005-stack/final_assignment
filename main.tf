@@ -136,6 +136,7 @@ resource "null_resource" "ansible" {
 
   provisioner "local-exec" {
     command = <<EOT
+      sleep 30
       ansible-playbook \
         -i "${azurerm_public_ip.publicip.ip_address}," \
         ansible/playbook.yml \
