@@ -9,6 +9,7 @@ terraform {
 
 provider "azurerm" {
   features {}
+  skip_provider_registration = true
 }
 
 # 1. Resource Group
@@ -53,7 +54,10 @@ resource "azurerm_network_interface" "nic" {
     private_ip_address_allocation = "Dynamic"
     public_ip_address_id          = azurerm_public_ip.publicip.id
   }
-}
+  ip_forwarding_enabled = true
+} 
+
+
 
 # 5. Network Security Group (SSH + HTTP)
 resource "azurerm_network_security_group" "nsg" {

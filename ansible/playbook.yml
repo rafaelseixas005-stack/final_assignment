@@ -40,3 +40,43 @@
           </html>
         dest: /var/www/html/index.html
         mode: '0644'
+
+    - name: Configure DHCP Server
+    - hosts: dhcp
+    - become: true
+
+    - tasks:
+    
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    
+    - name: Install DHCP server
+      apt:
+        name: isc-dhcp-server
+        state: present
+
+    
+    - name: Configure DHCP interface
+      copy:
+        dest: /etc/default/isc-dhcp-server
+        content: |
+          INTERFACESv4="eth0"
+
+    
+    - name: Configure dhcpd.conf
+      copy:
+        dest: /etc/dhcp/dhcpd.conf
+        content: |
+          subnet 10.0.1.0 netmask 255.255.255.0 {
+            range 10.0.1.100 10.0.1.150;
+            option routers 10.0.1.1;
+            option domain-name-servers 8.8.8.8;}
+
+    
+    - name: Restart and enable DHCP service
+      service:
+        name: isc-dhcp-server
+        state: restarted
+        enabled: yes
