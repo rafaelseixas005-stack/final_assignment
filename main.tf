@@ -14,7 +14,7 @@ provider "azurerm" {
 # 1. Resource Group
 resource "azurerm_resource_group" "rg" {
   name     = "my-terraform-rg"
-  location = "francecentral"
+  location = "spaincentral"
 }
 
 # 2. Virtual Network and Subnet

@@ -1,8 +1,8 @@
 ---
 - name: Install and Configure Nginx
   hosts: webservers
-  vars_files:
-    - vault.yml
+  #vars_files:
+    #- vault.yml
   become: true 
   tasks:
     - name: Update apt cache
