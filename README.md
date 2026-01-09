@@ -28,18 +28,20 @@ TIP: https://techcommunity.microsoft.com/blog/azurenetworkingblog/custom-dhcp-su
       copy the repo and create an azure account 
 
 #2 On terminal put the following commands:
-      sudo apt update
-      az login (login into the account)
-      sudo apt install ansible 
-      sudo apt install terraform
-      sudo apt install openssh-client -y
+      
+	sudo apt update 
+	az login (login into the account)
+	sudo apt install ansible 
+	sudo apt install terraform
+	sudo apt install openssh-client -y
 
 #### (if you want you can change the azure region just go to the main.tf file and change in 1. were says "spaincentral") ####
 
 #3 On the repo past execute:
-      terraform init
-      terraform plan
-      terraform apply 
+      
+	terraform init
+	terraform plan
+	terraform apply 
 
 #4 Go to the azure: 
       resource groups -> my-terraform-rg -> my-ubuntu-vm -> connect -> edit settings -> reset ssh private key -> run the command
