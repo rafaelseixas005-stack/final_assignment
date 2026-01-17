@@ -49,3 +49,9 @@ TIP: https://techcommunity.microsoft.com/blog/azurenetworkingblog/custom-dhcp-su
 #5 Change the "ssh -i <private-key-file-path>" with the path of the dowloaded key
 
 #6 Run your cloud Vm without problems 
+
+Elementos do grupo:
+
+	Rafael Seixas - Nº
+	Rafael Maia - Nº 121041
+	Gonçalo Casqueira - Nº 122060
