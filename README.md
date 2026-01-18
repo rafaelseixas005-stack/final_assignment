@@ -38,7 +38,12 @@ TIP: https://techcommunity.microsoft.com/blog/azurenetworkingblog/custom-dhcp-su
 #### (if you want you can change the azure region just go to the main.tf file and change in 1. were says "spaincentral") ####
 
 #3 On the repo past execute:
-      
+
+	on the main folder:
+	sudo nano terraform.tfvars
+	admin_password = "YOUR_PASSWORD"
+
+	after saving:
 	terraform init
 	terraform plan
 	terraform apply 
